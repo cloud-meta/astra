@@ -1,0 +1,33 @@
+model CloudControlRequest<T: AWSResource> {
+    TypeName: string
+    ResourceModel: T
+}
+
+model CloudControlResponse<T: AWSResource> {
+    ErrorCode: string
+    EventTime: number
+    HooksRequestToken: string
+    Identifier: string
+    Operation: string
+    OperationStatus: string
+    RequestToken: string
+    ResourceModel: T
+    RetryAfter: number
+    StatusMessage: string
+    TypeName: string
+}
+
+@auth("aws-v4")
+service CloudControl<T: AWSResource> {
+    region: string
+    endpoint: string = "https://cloudcontrol.{region}.amazonaws.com"
+    
+    @post("/")
+    func create(@body req: CloudControlRequest<T>) CloudControlResponse<T>
+    
+    @post("/")
+    func delete(@body req: CloudControlRequest<T>) CloudControlResponse<T>
+
+    @post("/")
+    func update(@body req: CloudControlRequest<T>) CloudControlResponse<T>
+}

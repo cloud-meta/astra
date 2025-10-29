@@ -31,28 +31,9 @@ resource EC2 extents VirtualMachine {
     }
 }
 
-abstract resource AWSResource {
-    Id: string
-    Trn: string
-    TypeName: string
-}
 
-model CloudControlRequest<T: AWSResource> {
-    TypeName: string
-    ResourceModel: T
-}
 
-@auth("aws-v4")
-service CloudControl<T: AWSResource> {
-    region: string
-    endpoint: string = "https://cloudcontrol.{region}.amazonaws.com"
-    
-    @post("/")
-    func create(@body req: CloudControlRequest<T>)
-    
-    @post("/")
-    func delete(@body req: CloudControlRequest<T>)
-}
+
 
 @cloud("aws")
 provider AWS<T: AWSResource> {

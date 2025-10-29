@@ -1,0 +1,32 @@
+abstract resource AWSResource {
+    Region: string
+    TypeName: string
+
+    cloudctl: CloudControl<AWSResource> = {
+        region: this.Region
+    }
+
+    lifecycle: {
+        action create() {
+            req: CloudControlRequest<T> = {
+                TypeName: this.TypeName
+                ResourceModel: res
+            }
+
+            resp: CloudControlResponse<T> = cloudctl.create(req: req)
+            
+            loop
+                resp: CloudControlResponse<T> = cloudctl.get(resp.Id) 
+            until resp.OperationStatus == SUCCESS
+
+            return resp.ResourceModel
+        }
+
+        action get() {}
+    }
+}
+
+resource Ec2Instance {
+
+}
+
