@@ -1,0 +1,11 @@
+abstract resource VirtualMachine {
+    Cpu: int
+    Memory: int
+    Storage: {
+        OS: FileStorage
+        Data: []FileStorage
+    }
+    NetworkInterfaces: {
+        
+    }
+}

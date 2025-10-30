@@ -1,17 +1,4 @@
 @cloud("aws")
 provider AWS<T: AWSResource> {
-    region: string
-    cloudctl: CloudControl<T> = {
-        region: this.region
-    }
-
-    func create(res T) {
-        req: CloudControlRequest<T>{
-            TypeName: meta("type")
-            ResourceModel: res
-        }
-
-        resp: cloudctl.create(req: req)
-        
-    }
+    
 }

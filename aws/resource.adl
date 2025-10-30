@@ -1,32 +1,64 @@
 abstract resource AWSResource {
+    Id: string
+    AccountId: string
     Region: string
     TypeName: string
+    Trn: string
 
-    cloudctl: CloudControl<AWSResource> = {
+    cloudctl: CloudControl<T> = {
         region: this.Region
     }
 
-    lifecycle: {
-        action create() {
-            req: CloudControlRequest<T> = {
-                TypeName: this.TypeName
-                ResourceModel: res
-            }
-
-            resp: CloudControlResponse<T> = cloudctl.create(req: req)
-            
-            loop
-                resp: CloudControlResponse<T> = cloudctl.get(resp.Id) 
-            until resp.OperationStatus == SUCCESS
-
-            return resp.ResourceModel
+    action create() {
+        req: CloudControlRequest<T> = {
+            TypeName: this.TypeName
+            ResourceModel: res
         }
 
-        action get() {}
+        resp = cloudctl.create(req: req)
+        
+        loop
+            // wait(1)
+            resp = cloudctl.get(resp.RequestToken) 
+        until resp.OperationStatus == SUCCESS
+
+        return resp.ResourceModel
+    }
+
+    action get() {}
+}
+
+abstract resource VirtualMachine {
+    cpu: int
+    memory: int
+    storage: {
+        os: FileStorage
+        data: []FileStorage
+    }
+    network: {
+        
     }
 }
 
-resource Ec2Instance {
+resource Ec2Instance extends VirtualMachine {
+    InstanceType: string => (cpu, memory: int): string = {
+        if cpu <= 2 {
+            return "m.2c4g"
+        }
+    }
 
+    @onchange(*)
+    
 }
 
+provider AWS {
+    cloudctl: CloudControl<T> = {
+        region: this.Region
+    }
+
+    action create() {
+
+    }
+}
+
+bind Ec2Instance => AWS
